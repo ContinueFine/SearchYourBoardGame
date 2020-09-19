@@ -2,6 +2,7 @@
 function eventsRegister(){
     $(function($){
         $(".filter_player select").on("change", onFilterChange);
+        $(".filter_time select").on("change", onFilterChange);
         $(".filter_tag input").on("change", onFilterChange);
     });
 }
@@ -21,6 +22,7 @@ function getSpreadData(){
             data[i].Name_Base = data[i].Name_Base + "[" + data[i].Name_Version_Expansion + "]";
             data[i].Players_Min = parseInt(data[i].Players_Min,10);
             data[i].PlayingTime_Min = parseInt(data[i].PlayingTime_Min,10);
+            data[i].PlayingTime_Max = parseInt(data[i].PlayingTime_Max,10);
             data[i].Tags = String(data[i].Tags).split(';');
             if(data[i].Image == null){
                 data[i].Image = "image/NoImage.png"
@@ -63,6 +65,12 @@ function onFilterChange(){
             return filterByPlayer(list, $('.filter_player select').val());
         }
     );
+    //Timeフィルタの追加
+    filterFncs.push(
+        function(list){
+            return filterByPlayer(list, $('.filter_time select').val());
+        }
+    );
     //Tagフィルタの追加
     filterFncs.push(
         function(list) {
@@ -94,6 +102,24 @@ function filterByPlayer(list, value){
                 return item.Players_Min == 1;
             case '2':
                 return 1 < item.Players_Min;
+        }
+    });
+}
+//Timeフィルタ
+function filterByPlayer(list, value){
+    if(value == ""){
+        return list;
+    }
+
+    return list.filter(function(item){
+        if(isNAN(item.PlayingTime_Min)){
+            item.PlayingTime_Min = null;
+        }
+        switch(value){
+            case 'short': //20分以下すべて
+                return item.PlayingTime_Min > 0 && item.PlayingTime_Max <= 20;
+            case 'nomal': //21分～40分以内
+                return item.PlayingTime_Min >= 20 && nvl(item.PlayingTime_Max, item.PlayingTime_Min) <= 40;
         }
     });
 }
