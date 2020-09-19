@@ -96,7 +96,7 @@ function onFilterChange(){
     //Timeフィルタの追加
     filterFncs.push(
         function(list){
-            return filterByPlayer(list, $('.filter_time select').val());
+            return filterByPlayingTime(list, $('.filter_time select').val());
         }
     );
     //Tagフィルタの追加
@@ -135,7 +135,7 @@ function filterByPlayer(list, value){
     });
 }
 //Timeフィルタ
-function filterByPlayer(list, value){
+function filterByPlayingTime(list, value){
     if(value == ""){
         return list;
     }
