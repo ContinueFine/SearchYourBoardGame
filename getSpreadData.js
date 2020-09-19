@@ -23,6 +23,7 @@ function getSpreadData(){
             data[i].Players_Min = parseInt(data[i].Players_Min,10);
             data[i].PlayingTime_Min = parseInt(data[i].PlayingTime_Min,10);
             data[i].PlayingTime_Max = parseInt(data[i].PlayingTime_Max,10);
+            data[i].PlayingTime = formatPlayingTime(data[i]);
             data[i].Tags = String(data[i].Tags).split(';');
             if(data[i].Image == null){
                 data[i].Image = "image/NoImage.png"
@@ -32,6 +33,21 @@ function getSpreadData(){
         localStorage.setItem('json', JSON.stringify(data));
         makeTable(data)
     });
+}
+
+function formatPlayingTime(data) {
+    var ret = "";
+    if(!isNaN(data.PlayingTime_Min)) {
+        ret += data.PlayingTime_Min;
+    }
+    if(data.PlayingTime_Min !== data.PlayingTime_Max) {
+        ret += " - ";
+        if(!isNaN(data.PlayingTime_Max)) {
+            ret += data.PlayingTime_Max;
+        }
+    }
+
+    return ret;
 }
 
 function makeTable(tableData){
@@ -46,7 +62,7 @@ function makeTable(tableData){
             }},
             {title:"名前", field:"Name_Base"},
             {title:"人数", field:"Players_Min"},
-            {title:"時間", field:"PlayingTime_Min", hozAlign:"right"},
+            {title:"時間", field:"PlayingTime", hozAlign:"right"},
             {title:"タグ", field:"Tags"},
             {title:"備考", field:"Remarks"}
         ],
@@ -111,16 +127,34 @@ function filterByPlayer(list, value){
         return list;
     }
 
+    const MOST_SHORT_TIME = 0;
+    const MOST_LONG_TIME = 10000;
+
+    var filterTimeMin, filterTimeMax;
+    switch(value){
+        case 'short': //20分以下
+            filterTimeMin = 0;
+            filterTimeMax = 20;
+            break;
+        case 'nomal': //21分～40分以内
+            filterTimeMin = 20;
+            filterTimeMax = 40;
+            break;
+        case 'long': //41分～60分以内
+            filterTimeMin = 40;
+            filterTimeMax = 60;
+            break;
+        case 'very_long': //61分以上
+            filterTimeMin = 60;
+            filterTimeMax = MOST_LONG_TIME;
+            break;
+    }
+
     return list.filter(function(item){
-        if(isNAN(item.PlayingTime_Min)){
-            item.PlayingTime_Min = null;
-        }
-        switch(value){
-            case 'short': //20分以下すべて
-                return item.PlayingTime_Min > 0 && item.PlayingTime_Max <= 20;
-            case 'nomal': //21分～40分以内
-                return item.PlayingTime_Min >= 20 && nvl(item.PlayingTime_Max, item.PlayingTime_Min) <= 40;
-        }
+        var playingTimeMin = (item.PlayingTime_Min === null)?MOST_SHORT_TIME:item.PlayingTime_Min;
+        var playingTimeMax = (item.PlayingTime_Max === null)?MOST_LONG_TIME:item.PlayingTime_Max;
+
+        return filterTimeMin <= playingTimeMax && filterTimeMax > playingTimeMin;
     });
 }
 //Tagフィルタ
