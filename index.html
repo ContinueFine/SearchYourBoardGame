@@ -36,8 +36,14 @@
                     <option value="very_long">がっつり遊ぶ(61分～)</option>
                 </select>
             </div>
-            <div class="filter_tag">
-                <h2>タグ(OR検索)</h2>
+            <div class="filter_tag_radio">
+                <h2>タグ</h2>
+                <p>
+                    <input type="radio" name="tag_radio" value="tag_and" id="radio001"><label for="radio001">AND</label>
+                    <input type="radio" name="tag_radio" value="tag_or" id="radio002" checked><label for="radio002">OR</label>
+                </p>
+            </div>
+            <div class="filter_tag_box">
                 <input type="checkbox" name="tag" value="対戦" id="chk001"><label for="chk001">対戦</label>
                 <input type="checkbox" name="tag" value="協力" id="chk002"><label for="chk002">協力</label>
                 <input type="checkbox" name="tag" value="デッキ構築" id="chk003"><label for="chk003">デッキ構築</label>

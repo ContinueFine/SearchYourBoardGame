@@ -3,7 +3,8 @@ function eventsRegister(){
     $(function($){
         $(".filter_player input").on("change", onFilterChange);
         $(".filter_time select").on("change", onFilterChange);
-        $(".filter_tag input").on("change", onFilterChange);
+        $(".filter_tag_radio input").on("change", onFilterChange);
+        $(".filter_tag_box input").on("change", onFilterChange);
     });
 }
 
@@ -102,7 +103,7 @@ function onFilterChange(){
     //Tagフィルタの追加
     filterFncs.push(
         function(list) {
-            return filterByTag(list, $('.filter_tag input:checked'));
+            return filterByTag(list, $('.filter_tag_radio input:checked').val(), $('.filter_tag_box input:checked'));
         }
     );
 
@@ -171,17 +172,24 @@ function filterByPlayingTime(list, value){
     });
 }
 //Tagフィルタ
-function filterByTag(list, value){
-    if(value.length == 0){
+function filterByTag(list, value_radio, value_box){
+    if(value_box.length == 0){
         return list;
     }
 
     return list.filter(function(item){
         var isMatch = false;
-        Array.from(value).forEach(function(chkItem, i) {
+        var matchCnt = 0;
+        Array.from(value_box).forEach(function(chkItem, i) {
             item.Tags.forEach(function(tagItem, i) {
                 if (tagItem === $(chkItem).val()) {
+                    //OR検索の場合は1つでも一致すればOK
                     isMatch = true;
+                    if (value_radio === "tag_and") {
+                        matchCnt += 1
+                        //AND検索の場合は全て一致した場合のみOK
+                        isMatch = (matchCnt === value_box.length)    
+                    }
                 }
             });
         });
