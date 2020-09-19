@@ -20,15 +20,21 @@ function getSpreadData(){
         console.dir(data);
         //文字列を対象のデータ型に直す
         for(i = 0; i < data.length; i++){
-            data[i].Name_Base = data[i].Name_Base + "[" + data[i].Name_Version_Expansion + "]";
+            //Name
+            var name_VerOrExp = (data[i].Name_Version_Expansion === null)?"":"[" + data[i].Name_Version_Expansion + "]";
+            data[i].Name_Base = data[i].Name_Base + name_VerOrExp;
+            //Player
             data[i].Players_Min = parseInt(data[i].Players_Min,10);
             data[i].Players_Max = parseInt(data[i].Players_Max,10);
             data[i].Players_OnlyFlag = (data[i].Players_OnlyFlag === 'TRUE');
             data[i].Players = formatPlayers(data[i]);
+            //Time
             data[i].PlayingTime_Min = parseInt(data[i].PlayingTime_Min,10);
             data[i].PlayingTime_Max = parseInt(data[i].PlayingTime_Max,10);
             data[i].PlayingTime = formatPlayingTime(data[i]);
+            //Tag
             data[i].Tags = String(data[i].Tags).split(';');
+            //Image
             if(data[i].Image == null){
                 data[i].Image = "image/NoImage.png"
             };
@@ -39,6 +45,17 @@ function getSpreadData(){
     });
 }
 
+//Playerのテキスト表示フォーマット
+function formatPlayers(data) {
+    var ret = "" + data.Players_Min;
+    if(data.Players_Min !== data.Players_Max) {
+        ret += (data.Players_OnlyFlag ? ", " : " - ") + data.Players_Max;
+    }
+
+    return ret;
+}
+
+//Timeのテキスト表示フォーマット
 function formatPlayingTime(data) {
     var ret = "";
     if(!isNaN(data.PlayingTime_Min)) {
@@ -54,15 +71,6 @@ function formatPlayingTime(data) {
     return ret;
 }
 
-function formatPlayers(data) {
-    var ret = "" + data.Players_Min;
-    if(data.Players_Min !== data.Players_Max) {
-        ret += (data.Players_OnlyFlag ? ", " : " - ") + data.Players_Max;
-    }
-
-    return ret;
-}
-
 function makeTable(tableData){
     var table = new Tabulator("#result-table", {
         data:tableData,
@@ -73,11 +81,11 @@ function makeTable(tableData){
                 height:"100px",
                 width:"100px",
             }},
-            {title:"名前", field:"Name_Base"},
+            {title:"名前", field:"Name_Base", formatter:"textarea"},
             {title:"人数", field:"Players"},
-            {title:"時間", field:"PlayingTime", hozAlign:"right"},
-            {title:"タグ", field:"Tags"},
-            {title:"備考", field:"Remarks"}
+            {title:"時間", field:"PlayingTime"},
+            {title:"タグ", field:"Tags", formatter:"textarea"},
+            {title:"備考", field:"Remarks", formatter:"textarea"}
         ],
     });
 }
@@ -147,7 +155,7 @@ function filterByPlayingTime(list, value){
     var filterTimeMin, filterTimeMax;
     switch(value){
         case 'short': //20分以下
-            filterTimeMin = 0;
+            filterTimeMin = MOST_SHORT_TIME;
             filterTimeMax = 20;
             break;
         case 'nomal': //21分～40分以内
