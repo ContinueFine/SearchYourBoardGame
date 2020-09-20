@@ -5,6 +5,7 @@ function eventsRegister(){
         $(".filter_time select").on("change", onFilterChange);
         $(".filter_tag_radio input").on("change", onFilterChange);
         $(".filter_tag_box input").on("change", onFilterChange);
+        $(".filter_owner select").on("change", onFilterChange);
     });
 }
 
@@ -19,6 +20,7 @@ function getSpreadData(){
         console.log(" - - - - - - - - - - - AllData");
         console.dir(data);
         //文字列を対象のデータ型に直す
+        var owner = {NoOwner:"指定なし"};
         for(i = 0; i < data.length; i++){
             //Name
             var name_VerOrExp = (data[i].Name_Version_Expansion === null)?"":"[" + data[i].Name_Version_Expansion + "]";
@@ -38,7 +40,11 @@ function getSpreadData(){
             if(data[i].Image == null){
                 data[i].Image = "image/NoImage.png"
             };
+            //Owner
+            owner[data[i].Owner] = data[i].Owner;
         }
+        //所有者のセレクトボックスを作成
+        createSelectBox("sel_owner", owner)
         //ローカルにデータをJSON形式で保存する
         localStorage.setItem('json', JSON.stringify(data));
         makeTable(data)
@@ -69,6 +75,17 @@ function formatPlayingTime(data) {
     }
 
     return ret;
+}
+
+//セレクトボックスを動的に作成する
+function createSelectBox(selBoxId, dict){
+    var keys = Object.keys(dict)
+    for(var i=0;i<keys.length;i++){
+        let op = document.createElement("option");
+        op.value = keys[i];         //value値
+        op.text = dict[keys[i]];    //テキスト値
+        document.getElementById(selBoxId).appendChild(op);
+    }
 }
 
 function makeTable(tableData){
@@ -112,6 +129,12 @@ function onFilterChange(){
     filterFncs.push(
         function(list) {
             return filterByTag(list, $('.filter_tag_radio input:checked').val(), $('.filter_tag_box input:checked'));
+        }
+    );
+    //Ownerフィルタの追加
+    filterFncs.push(
+        function(list){
+            return filterByOwner(list, $('.filter_owner select').val());
         }
     );
 
@@ -202,6 +225,16 @@ function filterByTag(list, value_radio, value_box){
             });
         });
         return isMatch;
+    });
+}
+//Ownerフィルタ
+function filterByOwner(list, value){
+    if(value == "NoOwner"){
+        return list;
+    }
+
+    return list.filter(function(item){
+        return item.Owner === value;
     });
 }
 
