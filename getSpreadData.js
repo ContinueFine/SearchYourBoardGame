@@ -35,11 +35,9 @@ function getSpreadData(){
             data[i].PlayingTime_Max = parseInt(data[i].PlayingTime_Max,10);
             data[i].PlayingTime = formatPlayingTime(data[i]);
             //Tag
-            data[i].Tags = String(data[i].Tags).split(';');
+            data[i].Tags = String(data[i].Tags === null ?"":data[i].Tags).split(';');
             //Image
-            if(data[i].Image == null){
-                data[i].Image = "image/NoImage.png"
-            };
+            data[i].Image = (data[i].Image === null)?"image/NoImage.png":data[i].Image;
             //Owner
             owner[data[i].Owner] = data[i].Owner;
         }
@@ -182,15 +180,15 @@ function filterByPlayingTime(list, value){
             filterTimeMax = 20;
             break;
         case 'nomal': //21分～40分以内
-            filterTimeMin = 20;
+            filterTimeMin = 21;
             filterTimeMax = 40;
             break;
         case 'long': //41分～60分以内
-            filterTimeMin = 40;
+            filterTimeMin = 41;
             filterTimeMax = 60;
             break;
         case 'very_long': //61分以上
-            filterTimeMin = 60;
+            filterTimeMin = 61;
             filterTimeMax = MOST_LONG_TIME;
             break;
     }
