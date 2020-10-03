@@ -51,9 +51,9 @@ function getSpreadData(){
 
 //Playerのテキスト表示フォーマット
 function formatPlayers(data) {
-    var ret = "" + data.Players_Min;
+    var ret = "" + (isNaN(data.Players_Min) ? "" : data.Players_Min);
     if(data.Players_Min !== data.Players_Max) {
-        ret += (data.Players_OnlyFlag ? ", " : " - ") + data.Players_Max;
+        ret += (data.Players_OnlyFlag ? ", " : " - ") + (isNaN(data.Players_Max) ? "" : data.Players_Max);
     }
 
     return ret;
