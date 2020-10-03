@@ -154,13 +154,17 @@ function filterByPlayer(list, value){
         return list;
     }
 
-    var players = parseInt(value, 10);
+    const MOST_LESS_PLAYER = 0;
+    const MOST_MANY_PLAYER = 10000;
 
+    var players = parseInt(value, 10);
     return list.filter(function(item){
+        var filterPlayerMin = (item.Players_Min === null?MOST_LESS_PLAYER:item.Players_Min);
+        var filterPlayerMax = (item.Players_Max === null?MOST_MANY_PLAYER:item.Players_Max);
         if(item.Players_OnlyFlag) {
-            return item.Players_Min === players || item.Players_Max === players;
+            return filterPlayerMin === players || filterPlayerMax === players;
         } else {
-            return item.Players_Min <= players && item.Players_Max >= players;
+            return filterPlayerMin <= players && filterPlayerMax >= players;
         }
     });
 }
