@@ -7,6 +7,7 @@ function eventsRegister(){
         $(".filter_rate select").on("change", onFilterChange);
         //$(".filter_tag_box input").on("change", onFilterChange);
         $(".filter_owner select").on("change", onFilterChange);
+        $(".filter_genre select").on("change", onFilterChange);
     });
 }
 
@@ -22,6 +23,7 @@ function getSpreadData(){
         console.dir(data);
         //文字列を対象のデータ型に直す
         var owner = {NoOwner:"指定なし"};
+        var genre = {0:"指定なし"};
         for(i = 0; i < data.length; i++){
             //Name
             var name_VerOrExp = (data[i].Name_Version_Expansion === null)?"":"[" + data[i].Name_Version_Expansion + "]";
@@ -42,10 +44,19 @@ function getSpreadData(){
             //Owner
             owner[data[i].Owner] = data[i].Owner;
             //Rating
-            data[i].Rating = parseInt(data[i].Rating,10);
+            data[i].Rating = (data[i].Rating === null)?0:parseInt(data[i].Rating,10);
+            //Genre
+            if (data[i].Genre != null) {
+                dict = createKVP(data[i].Genre, ";");
+                genre[Object.keys(dict)[0]] = dict[Object.keys(dict)[0]];
+            }
+
+            
         }
         //所有者のセレクトボックスを作成
         createSelectBox("sel_owner", owner)
+        //ジャンルのセレクトボックスを作成
+        createSelectBox("sel_genre", genre)
         //ローカルにデータをJSON形式で保存する
         localStorage.setItem('json', JSON.stringify(data));
         makeTable(data)
@@ -87,6 +98,17 @@ function createSelectBox(selBoxId, dict){
         op.text = dict[keys[i]];    //テキスト値
         document.getElementById(selBoxId).appendChild(op);
     }
+}
+
+//区切り文字で分けられた文字列の、最初の２項目をKeyとValueに変換する
+function createKVP(strArg, separator){
+    var dict = {}
+    if(String(strArg).match("^[0-9]{1,};.{1,}$") === null) {
+        return null
+    }
+    var str = String(strArg).split(separator)
+    dict[str[0]] = str[1]
+    return dict
 }
 
 function makeTable(tableData){
@@ -146,6 +168,13 @@ function onFilterChange(){
             return filterByOwner(list, $('.filter_owner select').val());
         }
     );
+    //Genreフィルタの追加
+    filterFncs.push(
+        function(list){
+            return filterByGenre(list, $('.filter_genre select').val());
+        }
+    );
+
 
     //全件リストをフィルタリングした結果を出力
     result = filterFncs.reduce(function(list, fnc){
@@ -259,6 +288,20 @@ function filterByOwner(list, value){
 
     return list.filter(function(item){
         return item.Owner === value;
+    });
+}
+//Genreフィルタ
+function filterByGenre(list, value){
+    if(value == 0){
+        return list;
+    }
+
+    return list.filter(function(item){
+        var dict = createKVP(item.Genre, ";");
+        if(dict === null){
+            return false
+        }
+        return Object.keys(dict)[0] === value;
     });
 }
 

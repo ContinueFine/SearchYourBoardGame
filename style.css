@@ -49,7 +49,10 @@ body {
 	margin-left: auto;
     background: #FFF;
     border: solid 3px #F57C00;/*線*/
-    border-radius: 10px;/*角の丸み*/
+	border-radius: 10px;/*角の丸み*/
+}
+.box1 label {
+	display: inline-block;/*label内は横並び*/
 }
 .box2 {
     padding: 0.5em 1em;

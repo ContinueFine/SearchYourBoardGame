@@ -21,13 +21,15 @@
 
 <body>
     <div class="filterArea">
+        <h1 class="cp_h1title">検索項目</h1>
         <div class="box1">
+        <label><span>人数</span>
             <div class="filter_player">
-                <h2>人数</h2>
                 <input type="number" name="player" />
             </div>
+        </label>
+        <label><span>時間</span>
             <div class="filter_time">
-                <h2>時間</h2>
                 <select name="time">
                     <option value="">指定なし</option>
                     <option value="short">サクッと遊ぶ(～20分)</option>
@@ -36,38 +38,49 @@
                     <option value="very_long">がっつり遊ぶ(61分～)</option>
                 </select>
             </div>
+        </label>
+        <label><span>評価</span>
             <div class="filter_rate">
-                <h2>評価</h2>
                 <select name="rate">
                     <option value="">指定なし</option>
-                    <option value="1">☆1</option>
-                    <option value="2">☆2</option>
-                    <option value="3">☆3</option>
-                    <option value="4">☆4</option>
-                    <option value="5">☆5</option>
+                    <option value="0">☆0(未評価)</option>
+                    <option value="1">☆1(微妙)</option>
+                    <option value="2">☆2(普通)</option>
+                    <option value="3">☆3(良い)</option>
+                    <option value="4">☆4(とても良い)</option>
+                    <option value="5">☆5(最高！)</option>
                 </select>
             </div>
+        </label>
+        <label>
             <!--
+            <span>タグ</span>
             <div class="filter_tag_radio">
-                <h2>タグ</h2>
-                <p>
                     <input type="radio" name="tag_radio" value="tag_and" id="radio001"><label for="radio001">AND</label>
                     <input type="radio" name="tag_radio" value="tag_or" id="radio002" checked><label for="radio002">OR</label>
-                </p>
             </div>
             <div class="filter_tag_box">
                 <input type="checkbox" name="tag" value="XXX" id="chk001"><label for="chk001">XXX</label>
                 <input type="checkbox" name="tag" value="YYY" id="chk002"><label for="chk002">YYY</label>
                 <input type="checkbox" name="tag" value="ZZZ" id="chk003"><label for="chk003">ZZZ</label>
-                <input type="checkbox" name="tag" value="カード" id="chk004"><label for="chk004">カード</label>
             </div>
             -->
+            <span>所有者</span>
             <div class="filter_owner">
-                <h2>所有者</h2>
                 <select name="owner" id="sel_owner">
                     <!--中身はスクリプトで動的に作成-->
                 </select>
             </div>
+        </label>
+        <p></p>
+        <label>
+            <span>ジャンル</span>
+            <div class="filter_genre">
+                <select name="genre" id="sel_genre">
+                    <!--中身はスクリプトで動的に作成-->
+                </select>
+            </div>
+        </label>
         </div>
     </div>
 
