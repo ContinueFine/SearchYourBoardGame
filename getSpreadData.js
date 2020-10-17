@@ -4,7 +4,8 @@ function eventsRegister(){
         $(".filter_player input").on("change", onFilterChange);
         $(".filter_time select").on("change", onFilterChange);
         $(".filter_tag_radio input").on("change", onFilterChange);
-        $(".filter_tag_box input").on("change", onFilterChange);
+        $(".filter_rate select").on("change", onFilterChange);
+        //$(".filter_tag_box input").on("change", onFilterChange);
         $(".filter_owner select").on("change", onFilterChange);
     });
 }
@@ -40,6 +41,8 @@ function getSpreadData(){
             data[i].Image = (data[i].Image === null)?"image/NoImage.png":data[i].Image;
             //Owner
             owner[data[i].Owner] = data[i].Owner;
+            //Rating
+            data[i].Rating = parseInt(data[i].Rating,10);
         }
         //所有者のセレクトボックスを作成
         createSelectBox("sel_owner", owner)
@@ -92,15 +95,17 @@ function makeTable(tableData){
         layout:"fitColumns",
         resizableColumns:false,
         columns:[
-            {title:"画像", field:"Image", formatter:"image", formatterParams:{
+            {title:"画像", field:"Image", formatter:"image", hozAlign:"center",
+             formatterParams:{
                 height:"100px",
-                width:"100px",
-            }},
+                width:"100px",},
+             width:120},
             {title:"名前", field:"Name_Base", formatter:"textarea"},
-            {title:"人数", field:"Players"},
-            {title:"時間", field:"PlayingTime"},
-            {title:"タグ", field:"Tags", formatter:"textarea"},
-            {title:"備考", field:"Remarks", formatter:"textarea"}
+            {title:"人数", field:"Players", width:100},
+            {title:"時間", field:"PlayingTime", width:100},
+            {title:"評価", field:"Rating", formatter:"star", hozAlign:"center", width:100},
+            //{title:"タグ", field:"Tags", formatter:"textarea"},
+            //{title:"備考", field:"Remarks", formatter:"textarea"},
         ],
     });
 }
@@ -123,12 +128,18 @@ function onFilterChange(){
             return filterByPlayingTime(list, $('.filter_time select').val());
         }
     );
-    //Tagフィルタの追加
+    //Rateフィルタの追加
     filterFncs.push(
+        function(list){
+            return filterByRate(list, $('.filter_rate select').val());
+        }
+    );
+    //Tagフィルタの追加
+    /*filterFncs.push(
         function(list) {
             return filterByTag(list, $('.filter_tag_radio input:checked').val(), $('.filter_tag_box input:checked'));
         }
-    );
+    );*/
     //Ownerフィルタの追加
     filterFncs.push(
         function(list){
@@ -202,6 +213,17 @@ function filterByPlayingTime(list, value){
         var playingTimeMax = (item.PlayingTime_Max === null)?MOST_LONG_TIME:item.PlayingTime_Max;
 
         return filterTimeMin <= playingTimeMax && filterTimeMax > playingTimeMin;
+    });
+}
+//Rateフィルタ
+function filterByRate(list, value){
+    if(value == ""){
+        return list;
+    }
+
+    var rate = parseInt(value, 10);
+    return list.filter(function(item){
+        return item.Rating === rate;
     });
 }
 //Tagフィルタ
