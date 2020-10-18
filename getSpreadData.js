@@ -8,6 +8,7 @@ function eventsRegister(){
         //$(".filter_tag_box input").on("change", onFilterChange);
         $(".filter_owner select").on("change", onFilterChange);
         $(".filter_genre select").on("change", onFilterChange);
+        $(".filter_coop_multi select").on("change", onFilterChange);
     });
 }
 
@@ -50,8 +51,6 @@ function getSpreadData(){
                 dict = createKVP(data[i].Genre, ";");
                 genre[Object.keys(dict)[0]] = dict[Object.keys(dict)[0]];
             }
-
-            
         }
         //所有者のセレクトボックスを作成
         createSelectBox("sel_owner", owner)
@@ -174,7 +173,12 @@ function onFilterChange(){
             return filterByGenre(list, $('.filter_genre select').val());
         }
     );
-
+    //Coop_Multiフィルタの追加
+    filterFncs.push(
+        function(list){
+            return filterByCoopMulti(list, $('.filter_coop_multi select').val());
+        }
+    );
 
     //全件リストをフィルタリングした結果を出力
     result = filterFncs.reduce(function(list, fnc){
@@ -303,6 +307,22 @@ function filterByGenre(list, value){
         }
         return Object.keys(dict)[0] === value;
     });
+}
+//Coop_Multiフィルタ
+function filterByCoopMulti(list, value){
+    if(value == ""){
+        return list;
+    }
+
+    switch(value){
+        case "multi":
+            return list.filter(function(item){return RegExp('対戦').test(item.Coop_Multi)});
+        case "coop":
+            return list.filter(function(item){return RegExp('協力').test(item.Coop_Multi)});
+        case "coop_multi":
+            return list.filter(function(item){return RegExp('対戦').test(item.Coop_Multi) &&
+                                                     RegExp('協力').test(item.Coop_Multi)});
+    };
 }
 
 //最初に実行される

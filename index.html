@@ -52,20 +52,17 @@
                 </select>
             </div>
         </label>
-        <label>
-            <!--
-            <span>タグ</span>
-            <div class="filter_tag_radio">
-                    <input type="radio" name="tag_radio" value="tag_and" id="radio001"><label for="radio001">AND</label>
-                    <input type="radio" name="tag_radio" value="tag_or" id="radio002" checked><label for="radio002">OR</label>
+        <label><span>対戦/協力</span>
+            <div class="filter_coop_multi">
+                <select name="coop_multi">
+                    <option value="">指定なし</option>
+                    <option value="multi">対戦</option>
+                    <option value="coop">協力</option>
+                    <option value="coop_multi">協力かつ対戦</option>
+                </select>
             </div>
-            <div class="filter_tag_box">
-                <input type="checkbox" name="tag" value="XXX" id="chk001"><label for="chk001">XXX</label>
-                <input type="checkbox" name="tag" value="YYY" id="chk002"><label for="chk002">YYY</label>
-                <input type="checkbox" name="tag" value="ZZZ" id="chk003"><label for="chk003">ZZZ</label>
-            </div>
-            -->
-            <span>所有者</span>
+        </label>
+        <label><span>所有者</span>
             <div class="filter_owner">
                 <select name="owner" id="sel_owner">
                     <!--中身はスクリプトで動的に作成-->
@@ -73,14 +70,25 @@
             </div>
         </label>
         <p></p>
-        <label>
-            <span>ジャンル</span>
+        <label><span>ジャンル</span>
             <div class="filter_genre">
                 <select name="genre" id="sel_genre">
                     <!--中身はスクリプトで動的に作成-->
                 </select>
             </div>
         </label>
+        <!--
+            <span>タグ</span>
+            <div class="filter_tag_radio">
+                <input type="radio" name="tag_radio" value="tag_and" id="radio001"><label for="radio001">AND</label>
+                <input type="radio" name="tag_radio" value="tag_or" id="radio002" checked><label for="radio002">OR</label>
+            </div>
+            <div class="filter_tag_box">
+                <input type="checkbox" name="tag" value="XXX" id="chk001"><label for="chk001">XXX</label>
+                <input type="checkbox" name="tag" value="YYY" id="chk002"><label for="chk002">YYY</label>
+                <input type="checkbox" name="tag" value="ZZZ" id="chk003"><label for="chk003">ZZZ</label>
+            </div>
+        -->
         </div>
     </div>
 
