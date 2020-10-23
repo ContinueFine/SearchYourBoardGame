@@ -122,6 +122,17 @@ async function after_reload(ms) {
     location.reload();
 }
 
+function jump_link(e, cell){
+    if(String(cell._cell.row.data.URL).startsWith("https://bodoge.hoobby.net")) {
+        if(window.confirm("リンク先を新しいタブで開きますか？\n" + cell._cell.row.data.URL)) {
+            window.open(String(cell._cell.row.data.URL))
+        }
+    }
+    else {
+        alert("無効なURLです。")
+    }
+}
+
 //チェックボックスの更新をかける
 function update_check(e){
     var name_VerOrExp = (e._cell.row.data.Name_Version_Expansion === null)?"":String(e._cell.row.data.Name_Version_Expansion);
@@ -150,18 +161,19 @@ function makeTable(tableData){
              formatterParams:{
                 height:"100px",
                 width:"100px",},
+             cellClick:function(e, cell){jump_link(e, cell)},
              width:120},
             {title:"名前", field:"Name", formatter:"textarea", headerFilter: true},
             {title:"人数", field:"Players", width:100},
             {title:"時間", field:"PlayingTime", width:100},
             {title:"評価", field:"Rating", formatter:"star", hozAlign:"center", width:100},
-            {title:"FAV", field:"Check", hozAlign:"center", editor:true, formatter:"tickCross", width:100,
+            {title:"FAV", field:"Check", hozAlign:"center", editor:true, formatter:"tickCross", 
              editorParams:{
                 tristate:false,},
              formatterParams:{
                 crossElement:false},
              cellEdited:function(e, cell){update_check(e)},
-             },
+             width:100,},
             //{title:"タグ", field:"Tags", formatter:"textarea"},
             //{title:"備考", field:"Remarks", formatter:"textarea"},
         ],
