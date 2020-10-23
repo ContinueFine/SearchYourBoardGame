@@ -151,7 +151,7 @@ function makeTable(tableData){
                 height:"100px",
                 width:"100px",},
              width:120},
-            {title:"名前", field:"Name", formatter:"textarea"},
+            {title:"名前", field:"Name", formatter:"textarea", headerFilter: true},
             {title:"人数", field:"Players", width:100},
             {title:"時間", field:"PlayingTime", width:100},
             {title:"評価", field:"Rating", formatter:"star", hozAlign:"center", width:100},
