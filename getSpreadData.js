@@ -1,3 +1,7 @@
+const store = new SteinStore("https://api.steinhq.com/v1/storages/5f43a0655d3cdc44fcd7d382");
+const READ_SHEET_NAME = "DataList";
+const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 //イベント登録処理
 function eventsRegister(){
     $(function($){
@@ -9,15 +13,14 @@ function eventsRegister(){
         $(".filter_owner select").on("change", onFilterChange);
         $(".filter_genre select").on("change", onFilterChange);
         $(".filter_coop_multi select").on("change", onFilterChange);
+        $(".filter_check input").on("change", onFilterChange);
     });
 }
 
 //Googleスプレッドシートからデータを取得する
 function getSpreadData(){
-    const READ_SHEET_NAME = "DataList";
-    const MAX_ROW = 10000;
+    const MAX_ROW = 199; //無料枠は1シート200行まで ※リクエストは月5,000回まで
     const START_ROW = 0;
-    const store = new SteinStore("https://api.steinhq.com/v1/storages/5f43a0655d3cdc44fcd7d382");
     store.read(READ_SHEET_NAME, {limit: MAX_ROW, offset: START_ROW}).then(data => {
         //デバッグ用データ内容表示
         console.log(" - - - - - - - - - - - AllData");
@@ -27,8 +30,9 @@ function getSpreadData(){
         var genre = {0:"指定なし"};
         for(i = 0; i < data.length; i++){
             //Name
+            data[i].Name_Base = data[i].Name_Base
             var name_VerOrExp = (data[i].Name_Version_Expansion === null)?"":"[" + data[i].Name_Version_Expansion + "]";
-            data[i].Name_Base = data[i].Name_Base + name_VerOrExp;
+            data[i].Name = data[i].Name_Base + name_VerOrExp;
             //Player
             data[i].Players_Min = parseInt(data[i].Players_Min,10);
             data[i].Players_Max = parseInt(data[i].Players_Max,10);
@@ -51,6 +55,8 @@ function getSpreadData(){
                 dict = createKVP(data[i].Genre, ";");
                 genre[Object.keys(dict)[0]] = dict[Object.keys(dict)[0]];
             }
+            //Check
+            data[i].Check = (data[i].Check === 'TRUE');
         }
         //所有者のセレクトボックスを作成
         createSelectBox("sel_owner", owner)
@@ -110,6 +116,24 @@ function createKVP(strArg, separator){
     return dict
 }
 
+//非同期で、指定ミリ秒後に画面をリロードする
+async function after_reload(ms) {
+    await _sleep(ms);
+    location.reload();
+}
+
+//チェックボックスの更新をかける
+function update_check(e){
+    var name_VerOrExp = (e._cell.row.data.Name_Version_Expansion === null)?"":String(e._cell.row.data.Name_Version_Expansion);
+    store.edit(READ_SHEET_NAME, {
+        search:{Name_Base:String(e._cell.row.data.Name_Base),
+                Name_Version_Expansion:name_VerOrExp},
+        set:{Check:String(e._cell.value).toUpperCase()}
+    });
+    //ローカル上は変わっていないため、リロードしてデータ再取得
+    after_reload(1000);
+}
+
 function makeTable(tableData){
     var custom_img_formatter = function(value){
         if(value._cell.row.data.Remarks !== null && String(value._cell.row.data.Remarks).match("(New)") !== null){
@@ -127,10 +151,17 @@ function makeTable(tableData){
                 height:"100px",
                 width:"100px",},
              width:120},
-            {title:"名前", field:"Name_Base", formatter:"textarea"},
+            {title:"名前", field:"Name", formatter:"textarea"},
             {title:"人数", field:"Players", width:100},
             {title:"時間", field:"PlayingTime", width:100},
             {title:"評価", field:"Rating", formatter:"star", hozAlign:"center", width:100},
+            {title:"FAV", field:"Check", hozAlign:"center", editor:true, formatter:"tickCross", width:100,
+             editorParams:{
+                tristate:false,},
+             formatterParams:{
+                crossElement:false},
+             cellEdited:function(e, cell){update_check(e)},
+             },
             //{title:"タグ", field:"Tags", formatter:"textarea"},
             //{title:"備考", field:"Remarks", formatter:"textarea"},
         ],
@@ -183,6 +214,12 @@ function onFilterChange(){
     filterFncs.push(
         function(list){
             return filterByCoopMulti(list, $('.filter_coop_multi select').val());
+        }
+    );
+    //Checkフィルタの追加
+    filterFncs.push(
+        function(list){
+            return filterByCheck(list, $('.filter_check input:checked'));
         }
     );
 
@@ -329,6 +366,13 @@ function filterByCoopMulti(list, value){
             return list.filter(function(item){return RegExp('対戦').test(item.Coop_Multi) &&
                                                      RegExp('協力').test(item.Coop_Multi)});
     };
+}
+//Checkフィルタ
+function filterByCheck(list, value){
+    if(value.length === 0){
+        return list;
+    }
+    return list.filter(function(item){return item.Check === true});
 }
 
 //最初に実行される
