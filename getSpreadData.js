@@ -111,12 +111,18 @@ function createKVP(strArg, separator){
 }
 
 function makeTable(tableData){
+    var custom_img_formatter = function(value){
+        if(value._cell.row.data.Remarks !== null && String(value._cell.row.data.Remarks).match("(New)") !== null){
+          return "<div class=\"mark-box\"><img src=\"" +  value._cell.value + "\"/></div>";  
+        }
+        return "<div class=\"non-mark-box\"><img src=\"" +  value._cell.value + "\"/></div>"
+    }
     var table = new Tabulator("#result-table", {
         data:tableData,
         layout:"fitColumns",
         resizableColumns:false,
         columns:[
-            {title:"画像", field:"Image", formatter:"image", hozAlign:"center",
+            {title:"画像", field:"Image", formatter:custom_img_formatter, hozAlign:"center",
              formatterParams:{
                 height:"100px",
                 width:"100px",},
