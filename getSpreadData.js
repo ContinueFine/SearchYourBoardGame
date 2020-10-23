@@ -19,7 +19,7 @@ function eventsRegister(){
 
 //Googleスプレッドシートからデータを取得する
 function getSpreadData(){
-    const MAX_ROW = 199; //無料枠は1シート200行まで ※リクエストは月5,000回まで
+    const MAX_ROW = 199; //無料枠は1シート200行まで ※なお、リクエストは月5,000回まで
     const START_ROW = 0;
     store.read(READ_SHEET_NAME, {limit: MAX_ROW, offset: START_ROW}).then(data => {
         //デバッグ用データ内容表示
